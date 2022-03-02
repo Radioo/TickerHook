@@ -36,16 +36,16 @@ void sendViaServer(const char* text)
 int(__cdecl* TickerFunc1)(void* a1, int a2) = nullptr;
 int __cdecl TickerFunc1_rep(void* a1, int a2)
 {
-    //std::cout << "Fired1: " << (char*)a1 << std::endl;
+    std::cout << "Fired1: " << (char*)a1 << std::endl;
     TickerOut((char*)a1);
-    
+
     return TickerFunc1(a1, a2);
 }
 
 int(__cdecl* TickerFunc2)(void* a1, int a2) = nullptr;
 int __cdecl TickerFunc2_rep(void* a1, int a2)
 {
-    //std::cout << "Fired2: " << (char*)a1 << std::endl;
+    std::cout << "Fired2: " << (char*)a1 << std::endl;
     TickerOut((char*)a1);
 
     return TickerFunc2(a1, a2);
@@ -56,10 +56,10 @@ int __cdecl TickerFunc3_rep(void* a1)
 {
     if ((uintptr_t)a1 != emptyTextPath)
     {
-        //std::cout << "Fired3: " << (char*)a1 << std::endl;
+        std::cout << "Fired3: " << (char*)a1 << (int*)a1 << std::endl;
         TickerOut((char*)a1);
     }
- 
+
     return TickerFunc3(a1);
 }
 
@@ -83,7 +83,7 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
         MH_Initialize();
 
         bm2dx_addr = uintptr_t(GetModuleHandleA("bm2dx.dll"));
-        emptyTextPath = bm2dx_addr + 0x134954;
+        emptyTextPath = bm2dx_addr + 0x11D9E4;
 
         // Parse config file
         std::ifstream cFile("TickerHook.ini");
@@ -122,9 +122,9 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
             exit(1);
         }
 
-        uintptr_t TickerFunc1Addr = 0x9AB60;
-        uintptr_t TickerFunc2Addr = 0x9AAF0;
-        uintptr_t TickerFunc3Addr = 0x9AD00;
+        uintptr_t TickerFunc1Addr = 0x8EA50;
+        uintptr_t TickerFunc2Addr = 0x8E9E0;
+        uintptr_t TickerFunc3Addr = 0x8EBF0;
 
         MH_CreateHook(
             reinterpret_cast<void*>(bm2dx_addr + TickerFunc1Addr),
@@ -144,7 +144,7 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
 
         MH_EnableHook(MH_ALL_HOOKS);
 
-        std::cout << "TickerHook for IIDX24 (2017082800)" << std::endl;
+        std::cout << "TickerHook for IIDX23 (2016083100)" << std::endl;
         std::cout << "Base module address is: ";
         std::cout << std::hex << bm2dx_addr << std::endl;
 
