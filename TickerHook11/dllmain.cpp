@@ -32,50 +32,31 @@ void sendViaServer(const char* text)
 }
 
 // Hooked functions
-__int64(__fastcall* Ticker28_1)(char* a1, int a2) = nullptr;
-__int64 __fastcall Ticker28_1_rep(char* a1, int a2)
+int(__cdecl* TickerFunc1)(char* a1, int a2) = nullptr;
+int __cdecl TickerFunc1_rep(char* a1, int a2)
 {
-    //std::cout << "Fired1! " << a1 << std::endl;
+    //std::cout << "Fired1: " << a1 << a2 << std::endl;
     TickerOut(a1);
 
-    return Ticker28_1(a1, a2);
+    return TickerFunc1(a1, a2);
 }
 
-__int64(__fastcall* Ticker28_2)(char* a1, int a2) = nullptr;
-__int64 __fastcall Ticker28_2_rep(char* a1, int a2)
+int(__cdecl* TickerFunc2)(char* a1, int a2) = nullptr;
+int __cdecl TickerFunc2_rep(char* a1, int a2)
 {
-    //std::cout << "Fired2! " << a1 << std::endl;
+    //std::cout << "Fired2: " << (char*)a1 << std::endl;
     TickerOut(a1);
 
-    return Ticker28_2(a1, a2);
+    return TickerFunc2(a1, a2);
 }
 
-__int64(__fastcall* Ticker28_3)(__int64 a1, int a2, char a3) = nullptr;
-__int64 __fastcall Ticker28_3_rep(__int64 a1, int emptystringflag, char a3)
+int(__cdecl* TickerFunc3)(char* a1) = nullptr;
+int __cdecl TickerFunc3_rep(char* a1)
 {
-    if (!emptystringflag)
-    {
-        //std::cout << "Fired3! a1: " << (char*)a1 << std::endl;
-        TickerOut((char*)a1);
-    }
+    //std::cout << "Fired3: " << a1 << std::endl;
+    TickerOut(a1);
 
-    return Ticker28_3(a1, emptystringflag, a3);
-}
-
-__int64(__fastcall* Stage)(void* a1, void* a2) = nullptr;
-__int64 __fastcall Stage_rep(void* a1, void* a2)
-{
-    std::cout << "STAGE SCENE" << std::endl;
-
-    return Stage(a1, a2);
-}
-
-DWORD* (__fastcall* MusicInfoFunc)(__int64 a1, DWORD* a2, __int64 MusicInfo, unsigned int a4, int a5, unsigned int a6) = nullptr;
-DWORD* __fastcall MusicInfoFunc_rep(__int64 a1, DWORD* a2, __int64 MusicInfo, unsigned int a4, int a5, unsigned int a6)
-{
-    std::cout << "MInfo: " << MusicInfo << std::endl;
-
-    return MusicInfoFunc(a1, a2, MusicInfo, a4, a5, a6);
+    return TickerFunc3(a1);
 }
 
 // Separate thread for the server
@@ -97,7 +78,7 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
 
         MH_Initialize();
 
-        bm2dx_addr = uintptr_t(GetModuleHandleA("bm2dx.dll"));
+        bm2dx_addr = uintptr_t(GetModuleHandleA("bm2dx.exe"));
 
         // Parse config file
         std::ifstream cFile("TickerHook.ini");
@@ -136,41 +117,30 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
             exit(1);
         }
 
-        uintptr_t TickerMusicSelectAddr1 = 0x783DF0;
-        uintptr_t TickerMusicSelectAddr2 = 0x783E80;
-        uintptr_t TickerMusicSelectAddr3 = 0x784210;
-        uintptr_t StageAddr = 0x746300;
-        uintptr_t MusicInfoFuncAddr = 0x23FD80;
+        uintptr_t TickerFunc1Addr = 0x21690;
+        uintptr_t TickerFunc2Addr = 0x217D0;
+        uintptr_t TickerFunc3Addr = 0x21960;
+
 
         MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerMusicSelectAddr1),
-            reinterpret_cast<void*>(Ticker28_1_rep),
-            reinterpret_cast<void**>(&Ticker28_1)
+            reinterpret_cast<void*>(bm2dx_addr + TickerFunc1Addr),
+            reinterpret_cast<void*>(TickerFunc1_rep),
+            reinterpret_cast<void**>(&TickerFunc1)
         );
         MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerMusicSelectAddr2),
-            reinterpret_cast<void*>(Ticker28_2_rep),
-            reinterpret_cast<void**>(&Ticker28_2)
+            reinterpret_cast<void*>(bm2dx_addr + TickerFunc2Addr),
+            reinterpret_cast<void*>(TickerFunc2_rep),
+            reinterpret_cast<void**>(&TickerFunc2)
         );
         MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerMusicSelectAddr3),
-            reinterpret_cast<void*>(Ticker28_3_rep),
-            reinterpret_cast<void**>(&Ticker28_3)
-        );
-        MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + StageAddr),
-            reinterpret_cast<void*>(Stage_rep),
-            reinterpret_cast<void**>(&Stage)
-        );
-        MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + MusicInfoFuncAddr),
-            reinterpret_cast<void*>(MusicInfoFunc_rep),
-            reinterpret_cast<void**>(&MusicInfoFunc)
+            reinterpret_cast<void*>(bm2dx_addr + TickerFunc3Addr),
+            reinterpret_cast<void*>(TickerFunc3_rep),
+            reinterpret_cast<void**>(&TickerFunc3)
         );
 
         MH_EnableHook(MH_ALL_HOOKS);
 
-        std::cout << "TickerHook for IIDX28 (2021091500)" << std::endl;
+        std::cout << "TickerHook for IIDX11 (JAB)" << std::endl;
         std::cout << "Base module address is: ";
         std::cout << std::hex << bm2dx_addr << std::endl;
 

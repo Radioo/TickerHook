@@ -35,7 +35,7 @@ void sendViaServer(const char* text)
 int(__cdecl* TickerFunc1) (const char* a1, int a2) = nullptr;
 int __cdecl TickerFunc1_rep(const char* a1, int a2)
 {
-    printf("TickerFunc1: %s\n", a1);
+    //printf("TickerFunc1: %s\n", a1);
 
     TickerOut(a1);
 
@@ -45,7 +45,7 @@ int __cdecl TickerFunc1_rep(const char* a1, int a2)
 int(__cdecl* TickerFunc2)(char* a1, int a2) = nullptr;
 int __cdecl TickerFunc2_rep(char* a1, int a2)
 {
-    printf("TickerFunc2: %s\n", a1);
+    //printf("TickerFunc2: %s\n", a1);
 
     TickerOut(a1);
 
@@ -55,7 +55,7 @@ int __cdecl TickerFunc2_rep(char* a1, int a2)
 int(__cdecl* TickerFunc3)(char* a1) = nullptr;
 int __cdecl TickerFunc3_rep(char* a1)
 {
-    printf("TickerFunc3: %s\n", a1);
+    //printf("TickerFunc3: %s\n", a1);
 
     TickerOut(a1);
 
@@ -65,7 +65,7 @@ int __cdecl TickerFunc3_rep(char* a1)
 int(__cdecl* TickerFunc4)(const char* a1, int a2) = nullptr;
 int __cdecl TickerFunc4_rep(const char* a1, int a2)
 {
-    printf("TickerFunc4: %s\n", a1);
+    //printf("TickerFunc4: %s\n", a1);
 
     TickerOut(a1);
 
@@ -75,7 +75,7 @@ int __cdecl TickerFunc4_rep(const char* a1, int a2)
 int(__cdecl* TickerClear)() = nullptr;
 int TickerClear_replace()
 {
-    printf("Ticker clear\n");
+    //printf("Ticker clear\n");
 
     TickerOut(" ");
 
