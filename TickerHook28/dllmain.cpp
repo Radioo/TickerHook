@@ -62,22 +62,6 @@ __int64 __fastcall Ticker28_3_rep(__int64 a1, int emptystringflag, char a3)
     return Ticker28_3(a1, emptystringflag, a3);
 }
 
-__int64(__fastcall* Stage)(void* a1, void* a2) = nullptr;
-__int64 __fastcall Stage_rep(void* a1, void* a2)
-{
-    std::cout << "STAGE SCENE" << std::endl;
-
-    return Stage(a1, a2);
-}
-
-DWORD* (__fastcall* MusicInfoFunc)(__int64 a1, DWORD* a2, __int64 MusicInfo, unsigned int a4, int a5, unsigned int a6) = nullptr;
-DWORD* __fastcall MusicInfoFunc_rep(__int64 a1, DWORD* a2, __int64 MusicInfo, unsigned int a4, int a5, unsigned int a6)
-{
-    std::cout << "MInfo: " << MusicInfo << std::endl;
-
-    return MusicInfoFunc(a1, a2, MusicInfo, a4, a5, a6);
-}
-
 // Separate thread for the server
 DWORD WINAPI StartServer(LPVOID dll_instance)
 {
@@ -139,8 +123,6 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
         uintptr_t TickerMusicSelectAddr1 = 0x783DF0;
         uintptr_t TickerMusicSelectAddr2 = 0x783E80;
         uintptr_t TickerMusicSelectAddr3 = 0x784210;
-        uintptr_t StageAddr = 0x746300;
-        uintptr_t MusicInfoFuncAddr = 0x23FD80;
 
         MH_CreateHook(
             reinterpret_cast<void*>(bm2dx_addr + TickerMusicSelectAddr1),
@@ -156,16 +138,6 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
             reinterpret_cast<void*>(bm2dx_addr + TickerMusicSelectAddr3),
             reinterpret_cast<void*>(Ticker28_3_rep),
             reinterpret_cast<void**>(&Ticker28_3)
-        );
-        MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + StageAddr),
-            reinterpret_cast<void*>(Stage_rep),
-            reinterpret_cast<void**>(&Stage)
-        );
-        MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + MusicInfoFuncAddr),
-            reinterpret_cast<void*>(MusicInfoFunc_rep),
-            reinterpret_cast<void**>(&MusicInfoFunc)
         );
 
         MH_EnableHook(MH_ALL_HOOKS);
