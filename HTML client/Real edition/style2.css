@@ -1,0 +1,41 @@
+
+body {
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+    background-color: black;
+  }
+  @font-face {
+    font-family:Alarm_clock;
+    src: url("alarm\ clock.ttf") format("truetype");
+  }
+#tickertext {
+    width: 100%;
+    margin: auto;
+	margin-left: 4px;
+	text-align: center;
+    /* font-kerning: none; No idea if this is needed anymore */
+    white-space: pre;
+	color: rgb(106, 194, 253);
+    /*text-shadow: 0 0 8px black, 0 0 8px black, 0 0 8px black, 0 0 8px black;*/
+    font-family: Alarm_clock;
+	/*font-weight: bold;*/
+    font-size:30px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    
+	transform: translate(-50%, -50%);
+	/*
+	background: linear-gradient(0deg, rgba(131,131,131,1) 0%, rgba(247,247,247,1) 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	*/
+}
+
+/*
+p {
+  background: linear-gradient(90deg, rgba(32,232,55,1) 34%, rgba(21,156,237,1) 67%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+*/
