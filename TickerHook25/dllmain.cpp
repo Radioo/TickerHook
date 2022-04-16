@@ -116,8 +116,10 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
 
         }
         else {
-            std::cerr << "Couldn't open config file for reading.\n";
-            exit(1);
+            serverMode = true;
+            std::cout << "Server mode" << std::endl;
+            CreateThread(NULL, NULL, StartServer, dll_instance, NULL, NULL);
+            TickerOut = &sendViaServer;
         }
 
         uintptr_t TickerFunc1Addr = 0x129790;

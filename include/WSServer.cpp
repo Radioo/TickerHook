@@ -41,9 +41,21 @@ public:
     {
         for (auto it : m_connections)
         {
-            m_server.send(it, text, websocketpp::frame::opcode::text);
+            std::string utfText = boost::locale::conv::to_utf<char>(text, "Shift_JIS");
+            m_server.send(it, utfText, websocketpp::frame::opcode::text);
         }
     }
+
+    std::string ConvertToBinary(std::string text)
+    {
+        std::string binarystring = "";
+        for (char& _char : text)
+        {
+            binarystring += std::bitset<8>(_char).to_string() + " ";
+        }
+        return binarystring;
+    }
+
 private:
     typedef std::set<connection_hdl, std::owner_less<connection_hdl>> con_list;
 

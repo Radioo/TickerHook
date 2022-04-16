@@ -4,8 +4,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <IncludePath>$(SolutionDir)include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)lib\$(Configuration);$(LibraryPath)</LibraryPath>
-    <ExternalIncludePath>C:\Tools&amp;Stuff\websocketpp-master;C:\Tools&amp;Stuff\boost_1_78_0;$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)lib\$(Configuration);C:\Program Files\boost\boost_1_79_0\stage\lib;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>C:\Tools&amp;Stuff\websocketpp-master;C:\Program Files\boost\boost_1_79_0;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(SolutionDir)$(Configuration)\$(PlatformTarget)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup />

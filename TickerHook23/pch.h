@@ -12,7 +12,9 @@
 #include <set>
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
+#include <boost/locale.hpp>
 #include <thread>
+#include <Psapi.h>
 
 #include "MinHook.h"
 #include <cstdint>
@@ -21,5 +23,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <bitset>
+#include <future>
 
 #endif //PCH_H
