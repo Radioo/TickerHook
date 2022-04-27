@@ -32,11 +32,10 @@ void sendViaServer(const char* text)
 }
 
 // Hooked functions
-int(__cdecl* TickerFunc1) (const char* a1, int a2) = nullptr;
-int __cdecl TickerFunc1_rep(const char* a1, int a2)
+int(__cdecl* TickerFunc1)(char* a1, int a2) = nullptr;
+int __cdecl TickerFunc1_rep(char* a1, int a2)
 {
-    //printf("TickerFunc1: %s\n", a1);
-
+    //std::cout << "Fired1: " << a1 << std::endl;
     TickerOut(a1);
 
     return TickerFunc1(a1, a2);
@@ -45,8 +44,7 @@ int __cdecl TickerFunc1_rep(const char* a1, int a2)
 int(__cdecl* TickerFunc2)(char* a1, int a2) = nullptr;
 int __cdecl TickerFunc2_rep(char* a1, int a2)
 {
-    //printf("TickerFunc2: %s\n", a1);
-
+    //std::cout << "Fired2: " << (char*)a1 << std::endl;
     TickerOut(a1);
 
     return TickerFunc2(a1, a2);
@@ -55,31 +53,10 @@ int __cdecl TickerFunc2_rep(char* a1, int a2)
 int(__cdecl* TickerFunc3)(char* a1) = nullptr;
 int __cdecl TickerFunc3_rep(char* a1)
 {
-    //printf("TickerFunc3: %s\n", a1);
-
+    //std::cout << "Fired3: " << a1 << std::endl;
     TickerOut(a1);
 
     return TickerFunc3(a1);
-}
-
-int(__cdecl* TickerFunc4)(const char* a1, int a2) = nullptr;
-int __cdecl TickerFunc4_rep(const char* a1, int a2)
-{
-    //printf("TickerFunc4: %s\n", a1);
-
-    TickerOut(a1);
-
-    return TickerFunc4(a1, a2);
-}
-
-int(__cdecl* TickerClear)() = nullptr;
-int TickerClear_replace()
-{
-    //printf("Ticker clear\n");
-
-    TickerOut(" ");
-
-    return TickerClear();
 }
 
 // Separate thread for the server
@@ -91,6 +68,7 @@ DWORD WINAPI StartServer(LPVOID dll_instance)
     return EXIT_SUCCESS;
 }
 
+// DllMain
 BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
     if (reason == DLL_PROCESS_ATTACH)
     {
@@ -141,40 +119,30 @@ BOOL APIENTRY DllMain(HMODULE dll_instance, DWORD reason, LPVOID) {
             TickerOut = &sendViaServer;
         }
 
-        uintptr_t TickerFuncOffset1 = 0x216F0;
-        uintptr_t TickerFuncOffset2 = 0x21800;
-        uintptr_t TickerFuncOffset3 = 0x218A0;
-        uintptr_t TickerFuncOffset4 = 0x215B0;
-        uintptr_t TickerFuncOffset5 = 0x21920;
+        uintptr_t TickerFunc1Addr = 0x48110;
+        uintptr_t TickerFunc2Addr = 0x48190;
+        uintptr_t TickerFunc3Addr = 0x48300; //got this
+
 
         MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerFuncOffset1),
+            reinterpret_cast<void*>(bm2dx_addr + TickerFunc1Addr),
             reinterpret_cast<void*>(TickerFunc1_rep),
             reinterpret_cast<void**>(&TickerFunc1)
         );
         MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerFuncOffset2),
+            reinterpret_cast<void*>(bm2dx_addr + TickerFunc2Addr),
             reinterpret_cast<void*>(TickerFunc2_rep),
             reinterpret_cast<void**>(&TickerFunc2)
         );
         MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerFuncOffset3),
+            reinterpret_cast<void*>(bm2dx_addr + TickerFunc3Addr),
             reinterpret_cast<void*>(TickerFunc3_rep),
             reinterpret_cast<void**>(&TickerFunc3)
         );
-        MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerFuncOffset4),
-            reinterpret_cast<void*>(TickerFunc4_rep),
-            reinterpret_cast<void**>(&TickerFunc4)
-        );
-        MH_CreateHook(
-            reinterpret_cast<void*>(bm2dx_addr + TickerFuncOffset5),
-            reinterpret_cast<void*>(TickerClear_replace),
-            reinterpret_cast<void**>(&TickerClear)
-        );
+
         MH_EnableHook(MH_ALL_HOOKS);
 
-        std::cout << "TickerHook for IIDX09 (JAG)" << std::endl;
+        std::cout << "TickerHook for IIDX12 (JAD)" << std::endl;
         std::cout << "Base module address is: ";
         std::cout << std::hex << bm2dx_addr << std::endl;
 
