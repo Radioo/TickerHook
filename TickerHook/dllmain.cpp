@@ -53,6 +53,27 @@ __int64 __fastcall TickerFunc2_rep(__int64 ticker, int emptyStringFlag, unsigned
     return TickerFunc2(ticker, emptyStringFlag, a3);
 }
 
+// 89 54 24 10 48 89 4C 24 08 48 83 EC 28 B9 01 00 00 00
+std::vector<BYTE> TickerFunc3_vec = { 0x89, 0x54, 0x24, 0x10, 0x48, 0x89, 0x4C, 0x24, 0x08, 0x48, 0x83, 0xEC, 0x28, 0xB9, 0x01, 0x00, 0x00, 0x00 };
+__int64(__fastcall* TickerFunc3)(__int64 ticker, void* a2) = nullptr;
+__int64 __fastcall TickerFunc3_rep(__int64 ticker, void* a2)
+{
+    TickerOut(ticker);
+
+    return TickerFunc3(ticker, a2);
+}
+
+// 44 88 44 24 18 89 54 24  10 48 89 4C 24 08 48 83
+// EC 38 83 7C 24 48 00
+std::vector<BYTE> TickerFunc4_vec = { 0x44, 0x88, 0x44, 0x24, 0x18, 0x89, 0x54, 0x24, 0x10, 0x48, 0x89, 0x4C, 0x24, 0x08, 0x48, 0x83, 0xEC, 0x38, 0x83, 0x7C, 0x24, 0x48, 0x00 };
+__int64(__fastcall* TickerFunc4)(__int64 ticker, void* a2, void* a3) = nullptr;
+__int64 __fastcall TickerFunc4_rep(__int64 ticker, void* a2, void* a3)
+{
+    TickerOut(ticker);
+
+    return TickerFunc4(ticker, a2, a3);
+}
+
 #else
 // 32bit funcs
 std::vector<BYTE> TickerFunc1_vec = { 0xCC, 0x56, 0xB8, 0x01, 0x00, 0x00, 0x00 };
@@ -217,6 +238,43 @@ void HookDllType(MODULEINFO moduleInfo)
             reinterpret_cast<void**>(&TickerFunc2)
         );
     }
+
+    result = std::search(addrLow, addrHigh, TickerFunc3_vec.begin(), TickerFunc3_vec.end());
+    if (result != addrHigh)
+    {
+        hooksMade++;
+        std::cout << "Found TikcerFunc3 at: " << std::hex << (uintptr_t)result << std::endl;
+        MH_CreateHook(
+            reinterpret_cast<void*>((uintptr_t)result),
+            reinterpret_cast<void*>(TickerFunc3_rep),
+            reinterpret_cast<void**>(&TickerFunc3)
+        );
+
+        result = std::search(result + TickerFunc3_vec.size(), addrHigh, TickerFunc3_vec.begin(), TickerFunc3_vec.end());
+        if (result != addrHigh)
+        {
+            hooksMade++;
+            std::cout << "Found TikcerFunc3 at: " << std::hex << (uintptr_t)result << std::endl;
+            MH_CreateHook(
+                reinterpret_cast<void*>((uintptr_t)result),
+                reinterpret_cast<void*>(TickerFunc3_rep),
+                reinterpret_cast<void**>(&TickerFunc3)
+            );
+        }
+    }
+
+    result = std::search(addrLow, addrHigh, TickerFunc4_vec.begin(), TickerFunc4_vec.end());
+    if (result != addrHigh)
+    {
+        hooksMade++;
+        std::cout << "Found TikcerFunc4 at: " << std::hex << (uintptr_t)result << std::endl;
+        MH_CreateHook(
+            reinterpret_cast<void*>((uintptr_t)result),
+            reinterpret_cast<void*>(TickerFunc4_rep),
+            reinterpret_cast<void**>(&TickerFunc4)
+        );
+    }
+
 #else
     // 32bit hooks
     BYTE* result = std::search(addrLow, addrHigh, TickerFunc1_vec.begin(), TickerFunc1_vec.end());
@@ -502,16 +560,18 @@ void HookExeType(MODULEINFO moduleInfo)
 int DecideModule()
 {
     HMODULE bm2dxModule = GetModuleHandleA("bm2dx.dll");
-    if (bm2dxModule == NULL)
-    {
-        bm2dxModule = GetModuleHandleA("bm2dx.exe");
-        if (bm2dxModule == NULL)
-        {
-            return 0;
-        }
-        else return 2;
+    if(bm2dxModule != nullptr) {
+        return 1;
     }
-    else return 1;
+    bm2dxModule = GetModuleHandleA("bm2dx_omni.dll");
+    if(bm2dxModule != nullptr) {
+        return 2;
+    }
+    bm2dxModule = GetModuleHandleA("bm2dx.exe");
+    if(bm2dxModule != nullptr) {
+        return 3;
+    }
+    return 0;
 }
 
 DWORD WINAPI SearchAndHook(LPVOID hModule)
@@ -532,6 +592,10 @@ DWORD WINAPI SearchAndHook(LPVOID hModule)
         HookDllType(moduleInfo);
 		break;
     case 2:
+        GetModuleInformation(GetCurrentProcess(), GetModuleHandleA("bm2dx_omni.dll"), &moduleInfo, sizeof(moduleInfo));
+        HookDllType(moduleInfo);
+        break;
+    case 3:
 		GetModuleInformation(GetCurrentProcess(), GetModuleHandleA("bm2dx.exe"), &moduleInfo, sizeof(moduleInfo));
 #if _WIN64
 #else
